@@ -47,6 +47,7 @@ public class Lab1_Baseline {
 		
 		//test3
 		//teste4
+		//teste5
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
