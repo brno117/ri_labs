@@ -231,7 +231,7 @@ public class Lab1_Baseline {
 				TopDocs results = searcher.search(query, 100);
 				ScoreDoc[] hits = results.scoreDocs;
 
-				//initial commit
+				//initial commit // 2
 				
 				int numTotalHits = (int)results.totalHits;
 				System.out.println(numTotalHits + " total matching documents");
