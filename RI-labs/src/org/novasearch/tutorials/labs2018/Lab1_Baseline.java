@@ -42,11 +42,16 @@ public class Lab1_Baseline {
 
 		// Create a new index
 		baseline.openIndex(analyzer, similarity);
+		
+		//Indexa os documentos 
 		baseline.indexDocuments();
+		
+		//fecha o index
 		baseline.close();
 		
-		//test3
-		//test10
+		
+		//Para nao teres que estar sempre a indexar os documentos cada vez que corres a aplicacao
+		//comentas as 3 linhas de codigo acima deixando so o search abaixo
 
 		// Search the index
 		baseline.indexSearch(analyzer, similarity);
@@ -93,16 +98,32 @@ public class Lab1_Baseline {
 
 		// ====================================================
 		// Parse the Answers data
+		
+		
+		//FileReader e o objecto que te permite ler o ficheiro
+		//BufferedReader e o objecto/destino de cada leitura feita ao ficheiro
 		try (BufferedReader br = new BufferedReader(new FileReader(docPath))) {
+			
+			//StringBuilder e o objecto que te permite ir construindo novo texto
 			StringBuilder sb = new StringBuilder();
+			
+			//Cada br.readLine le uma linha do ficheiro e coloca na variavel "line"
 			String line = br.readLine(); // The first line is dummy
 			line = br.readLine();
 
 			// ====================================================
 			// Read documents
+			
+			//Efetua um ciclo enquanto o br conseguir ler linhas ao ficheiro (Enquanto o ficheiro tiver conteudo)
 			while (line != null) {
 				int i = line.length();
 
+				
+				//Dentro do ficheiro ha varios documentos, as proximas linhas procuram pelo caracter
+				//de separacao de cada documento, se encontrar fazem a indexacao (chamam a funcao
+				//indexDoc que eu ainda nao sei o que faz exatamente) se nao encontrarem continuam a 
+				//ler linhas do ficheiro ate atingir o fim do documento
+				
 				// Search for the end of document delimiter
 				if (i != 0)
 					sb.append(line);
@@ -197,21 +218,38 @@ public class Lab1_Baseline {
 
 	// ====================================================
 	// Comment and refactor this method yourself
+	//
+	//Este e o metodo que faz a pesquisa
 	public void indexSearch(Analyzer analyzer, Similarity similarity) {
 
 		IndexReader reader = null;
 		try {
+			
+			//Abre o ficheiro onde fizemos a indexacao
 			reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
+			
+			//Passa o ficheiro como parametro deste objeto searcher que eu nao sei o que faz ainda
 			IndexSearcher searcher = new IndexSearcher(reader);
+			
+			//Este searcher tem uma propriedade "similarity" que e definida usando o objeto
+			//recebido em parametro
 			searcher.setSimilarity(similarity);
 
+			//BufferedReader e o objecto onde vai ser armazenado e processado o ficheiro index que criamos no metodo
+			//anterior
 			BufferedReader in = null;
 			in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
 
+			//Objeto que vai processar o que escrevemos na consola
+			//(pesquisa pelo conteudo nos ficheiros
 			QueryParser parser = new QueryParser("Body", analyzer);
+			
+			//Este ciclo itera infinitamente para poderes escrever na consola quando quiseres
+			//Basicamente fica a espera de input
 			while (true) {
 				System.out.println("Enter query: ");
 
+				
 				String line = in.readLine();
 
 				if (line == null || line.length() == -1) {
@@ -223,6 +261,7 @@ public class Lab1_Baseline {
 					break;
 				}
 
+				//Faz o processamento da linha lida devolvendo um objeto "query"
 				Query query;
 				try {
 					query = parser.parse(line);
@@ -231,14 +270,22 @@ public class Lab1_Baseline {
 					continue;
 				}
 
+				//Faz uma pesquisa usando a "query" criada e devolve um objeto "TopDocs"
 				TopDocs results = searcher.search(query, 100);
+				
+				//Cria um array com as pontuacoes de cada documento obtidas apartir do "TopDocs"
 				ScoreDoc[] hits = results.scoreDocs;
 
-				//initial commit // 2
-				
+				//Numero de documentos encontrados com a pesquisa efetuada
 				int numTotalHits = (int)results.totalHits;
 				System.out.println(numTotalHits + " total matching documents");
 
+				//Efetua um ciclo que por cada um dos documentos encontrados faz:
+				//Obtem o objeto "Document" apartir do Searcher criado acima
+				//Apartir do documento obtem a frase onde fez match com as palavras que procuravamos
+				//Obtemt o "Id" da resposta tambem apartir do "Document" gerado
+				//Escreve esta informacao na consola (a partir do system.out.println)
+				
 				for (int j = 0; j < hits.length; j++) {
 					Document doc = searcher.doc(hits[j].doc);
 					String answer = doc.get("Body");
@@ -254,6 +301,9 @@ public class Lab1_Baseline {
 				}
 			}
 			reader.close();
+			
+			//Excecoes para se o programa rebentar a abrir os ficheiros guardados na maquina 
+			
 		} catch (IOException e) {
 			try {
 				reader.close();
