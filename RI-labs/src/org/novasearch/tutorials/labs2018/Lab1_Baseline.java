@@ -182,6 +182,8 @@ public class Lab1_Baseline {
 			} catch (ParseException e1) {
 				System.out.println("Error parsing date for document " + AnswerId);
 			}
+			
+			//Teste Gits
 
 			// Extract field ParentId
 			start = end + 1;
